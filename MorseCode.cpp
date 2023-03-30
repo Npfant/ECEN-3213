@@ -1,5 +1,5 @@
 //Author: Nathan Perry Fant
-//Use g++ -std=c++14 -o morseCode morseCode.cpp -lwiringPi
+//Use g++ -std=c++14 -o MorseCode MorseCode.cpp -lwiringPi
 
 #include <chrono>
 #include <iostream>
@@ -16,6 +16,8 @@ void stop(int);
 string morseStr;
 string str;
 int counter = 0;
+int reset = 0;
+int confirm = 0;
 auto t_start = std::chrono::high_resolution_clock::now();
 
 int button_state = LOW;
@@ -151,13 +153,16 @@ char morseLib(string morse){
 	if(morse == "-.--") Char = 'Y';
 	if(morse == "--..") Char = 'Z';
 	if(morse == "-----") Char = ' ';
+	if(morse == "..--..") Char = '?';
 	
 	return Char;
 }
 
 void press_input() {
+	delay(100);
 	pinMode(18, INPUT);
     int state = digitalRead(18);
+	//cout << "State: " << state << "Counter: " << counter << endl; 
 	if(state == 1){
 		t_start = std::chrono::high_resolution_clock::now();
 		counter++;
@@ -166,7 +171,7 @@ void press_input() {
 		if(counter == 1){
 			auto t_end = std::chrono::high_resolution_clock::now();
 			double totTime = std::chrono::duration<double, std::milli>(t_end-t_start).count();
-			if(totTime > 750 )
+			if(totTime > 500 )
 				morseStr.push_back('-');
 			else
 				morseStr.push_back('.');
@@ -174,22 +179,33 @@ void press_input() {
 			counter = 0;
 		}
 	}
+	if(counter > 1)
+		counter = 0;
 }
 void press_reset() {
-	pinMode(23, INPUT);
-	int state = digitalRead(23);
-	if(state == 1){
-		cout << "Input Reset" << endl;
-		morseStr.clear();
+	reset++;
+	delay(100);
+	if(reset == 2){
+	cout << "Input Reset" << endl;
+	morseStr.clear();
+	reset = 0;
 	}
 }
 void press_confirm() {
-	clear();
-	pinMode(24, INPUT);
-	int state = digitalRead(24);
-	if(state == 1){
-		str += morseLib(morseStr);
-		write(0,0,str.c_str());
+	delay(100);
+	confirm++;
+	//pinMode(23, INPUT);
+	//int state = digitalRead(24);
+	//cout << "LCD: " << state << endl;
+	if(confirm == 2){
+		if(!morseStr.empty()){
+			clear();
+			str += morseLib(morseStr);
+			cout << "Printed: " << str << endl;
+			write(0,0,str.c_str());
+		}
+		confirm = 0;
+		morseStr.clear();
 	}
 }
 
@@ -201,10 +217,12 @@ int main(){
 	fd = wiringPiI2CSetup(LCDAddr);
 	init();
 
-	wiringPiISR(18, INT_EDGE_RISING, &press_input);
-	wiringPiISR(18, INT_EDGE_FALLING, &press_input);
-	wiringPiISR(23, INT_EDGE_BOTH, &press_confirm);
-	wiringPiISR(24, INT_EDGE_BOTH, &press_reset);
+	wiringPiISR(18, INT_EDGE_BOTH, &press_input);
+	//wiringPiISR(18, INT_EDGE_FALLING, &press_input);
+	wiringPiISR(23, INT_EDGE_RISING, &press_confirm);
+	wiringPiISR(24, INT_EDGE_FALLING, &press_reset);
+
+	while(true){};
 
 }
 
