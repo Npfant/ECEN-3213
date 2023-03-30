@@ -159,11 +159,11 @@ void press_input() {
 	pinMode(18, INPUT);
     int state = digitalRead(18);
 	if(state == 1){
+		t_start = std::chrono::high_resolution_clock::now();
 		counter++;
+	}
+	if(state == 0){
 		if(counter == 1){
-			t_start = std::chrono::high_resolution_clock::now();
-		}
-		if(counter == 2){
 			auto t_end = std::chrono::high_resolution_clock::now();
 			double totTime = std::chrono::duration<double, std::milli>(t_end-t_start).count();
 			if(totTime > 750 )
@@ -175,7 +175,7 @@ void press_input() {
 		}
 	}
 }
-void press_confirm() {
+void press_reset() {
 	pinMode(23, INPUT);
 	int state = digitalRead(23);
 	if(state == 1){
@@ -183,7 +183,7 @@ void press_confirm() {
 		morseStr.clear();
 	}
 }
-void press_reset() {
+void press_confirm() {
 	clear();
 	pinMode(24, INPUT);
 	int state = digitalRead(24);
