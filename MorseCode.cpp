@@ -183,19 +183,34 @@ void press_input() {
 		counter = 0;
 }
 void press_reset() {
-	reset++;
+	//reset++;
 	delay(100);
-	if(reset == 2){
+	pinMode(24,INPUT);
+	int read = digitalRead(24);
+	if(read == 1){
 	cout << "Input Reset" << endl;
 	morseStr.clear();
-	reset = 0;
+	//reset = 0;
 	}
 }
+void lcd_reset() {
+	//reset++;
+	delay(100);
+	pinMode(25,INPUT);
+	int read = digitalRead(25);
+	if(read == 1){
+	cout << "LCD Reset" << endl;
+	clear();
+	str.clear();
+	//reset = 0;
+	}
+}
+
 void press_confirm() {
 	delay(100);
 	confirm++;
-	//pinMode(23, INPUT);
-	//int state = digitalRead(24);
+	pinMode(23, INPUT);
+	int state = digitalRead(24);
 	//cout << "LCD: " << state << endl;
 	if(confirm == 2){
 		if(!morseStr.empty()){
@@ -220,7 +235,8 @@ int main(){
 	wiringPiISR(18, INT_EDGE_BOTH, &press_input);
 	//wiringPiISR(18, INT_EDGE_FALLING, &press_input);
 	wiringPiISR(23, INT_EDGE_RISING, &press_confirm);
-	wiringPiISR(24, INT_EDGE_FALLING, &press_reset);
+	wiringPiISR(24, INT_EDGE_RISING, &press_reset);
+	wiringPiISR(25, INT_EDGE_RISING, &lcd_reset);
 
 	while(true){};
 
