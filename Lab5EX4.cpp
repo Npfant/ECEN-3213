@@ -1,5 +1,7 @@
-// Lab 5, Exercise 3
-// g++ -std=c++14 Lab5EX3.cpp -o Lab5EX3 -lwiringPi
+
+//Authors: Nathan Fant, Nate Craig
+// Lab 5, Exercise 4
+// g++ -std=c++14 Lab5EX4.cpp -o Lab5EX -lwiringPi
 
 #include <stdio.h>
 #include <wiringPi.h>
@@ -172,10 +174,8 @@ void press_button() {
     delay(100);
     int val = digitalRead(BUTTON);
     if(val == 1){
-        //cout << state<< endl;
     if (state == STOPPED) {
         /* Complete the code */
-        //cout << "Test" << endl;
         begin_time = high_resolution_clock::now();
         state = RUNNING;
     } else if (state == RUNNING) {
@@ -183,7 +183,6 @@ void press_button() {
         high_resolution_clock::time_point end_time = high_resolution_clock::now();
         counter++;
         timestamp = formatTime(begin_time, end_time);
-        //cout << "Test2" << endl;
         cout << counter << endl;
         if(counter == 1 || counter == 21){
             place = to_string(counter) + "st: " + timestamp; 
@@ -212,19 +211,18 @@ void press_button() {
     int reset_counter = 0;
     int counter_max = 4 / sleep_duration;
     while(digitalRead(BUTTON)){
-        //cout << "test" << endl;
         usleep(sleep_duration * 1000 * 1000);
         reset_counter++;
         if(reset_counter >= counter_max){
             state = STOPPED;
-            cout << "Reset" << endl;
+            clear();
             counter = 0;
             count = 0;
             for(int i = 0; i < 30; i++){
                 for(int j = 0; j < 30; j++)
                     times[i][j] = ' ';
             }
-            place = " ";
+            place = "                       ";
             break;
     }
     }
@@ -273,7 +271,6 @@ int main(){
             clear();
             string reset = "STOPPED";
             write(0,0, reset.c_str());
-            //cout << count << endl;
             if(count > counter){
                 count = 1;
             }
