@@ -1,4 +1,5 @@
 // Lab 5, Exercise 3
+//Authors: Nathan Fant, Nate Craig
 // g++ -std=c++14 Lab5EX3.cpp -o Lab5EX3 -lwiringPi
 
 #include <stdio.h>
